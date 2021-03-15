@@ -31,6 +31,9 @@ def build_index(in_dir, out_dict, out_postings):
 
     final_dict_file = open(out_dict, 'a')
     final_postings_file = open(out_postings, 'a')
+    length_file = open("length.txt", 'a')
+    
+    term_counter = 0
 
     ps = PorterStemmer()
 
@@ -48,7 +51,7 @@ def build_index(in_dir, out_dict, out_postings):
         for sentence in sentences:
             terms = nltk.word_tokenize(sentence)
             for term in terms:
-
+                term_counter += 1
                 if case_fold_status:
                     term = term.lower()
                 if stem_status:
@@ -70,6 +73,11 @@ def build_index(in_dir, out_dict, out_postings):
 
                 else:
                     dict_of_terms[term] = {current_doc_id: 1}
+
+        # Writing length file
+        doc_and_counter = (current_doc_id, term_counter)
+        length_file.write(str(doc_and_counter) + "\n")
+        term_counter = 0
 
     dict_of_terms = dict(sorted(dict_of_terms.items()))
 
