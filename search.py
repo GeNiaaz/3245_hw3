@@ -96,6 +96,9 @@ def run_search(dict_file, postings_file, queries_file, results_file):
         list_of_stemmed_terms_to_search = [ps.stem(term) for term in list_of_terms_to_search]
         list_of_stemmed_terms_to_search = check_existence(list_of_stemmed_terms_to_search, dict_of_terms)
 
+        if list_of_stemmed_terms_to_search == 0:
+            generated_results_file.write("\n")
+            continue
         if list_of_stemmed_terms_to_search == 1:
             single_term_query_status = True
         else:
@@ -167,7 +170,7 @@ def run_search(dict_file, postings_file, queries_file, results_file):
         to_write = []
         try:
             for i in range(0, 10):
-                to_write.append(str(final_list[i]))
+                to_write.append(str(final_list[i][1]))
         except IndexError:
             ...
 
