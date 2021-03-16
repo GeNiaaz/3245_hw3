@@ -38,7 +38,7 @@ def build_index(in_dir, out_dict, out_postings):
     '''
 
     # Variables to change
-    case_fold_status = True
+    case_fold_status = False
     stem_status = True
 
     # Init txt files
@@ -53,7 +53,7 @@ def build_index(in_dir, out_dict, out_postings):
     final_postings_pickle_file = open(out_postings, 'ab')
     length_pickle_file = open("length_pickle.pkl", 'ab')
     normalise_n_pickle_file = open("normalise_n.pkl", 'ab')
-    normalise_n_dict_pickle_file = open("normalise_n_dict_file.pkl", 'ab')
+    normalise_n_dict_pickle_file = open("normalise_n_dict.pkl", 'ab')
 
     term_counter = 0
     normalise_n_index_txt = 0
