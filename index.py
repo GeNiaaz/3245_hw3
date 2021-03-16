@@ -63,8 +63,6 @@ def build_index(in_dir, out_dict, out_postings):
 
     dict_of_terms = {}
     temp_dict = {}
-    temp_dict_tf_for_docs = {}
-    final_tf_vector_dict = {}
 
     for current_doc_id in list_of_document_id:
         doc_path = in_dir + str(current_doc_id)
@@ -112,7 +110,7 @@ def build_index(in_dir, out_dict, out_postings):
         # Writing length txt file
         doc_and_counter = (current_doc_id, term_counter)
         length_txt_file.write(str(doc_and_counter) + "\n")
-        
+
         # Writing pickle length file
         pickle.dump(doc_and_counter, length_pickle_file)
 
@@ -136,41 +134,21 @@ def build_index(in_dir, out_dict, out_postings):
 
             list_of_normalised_tf.append((p[0], norm_result))
 
-        temp_dict_tf_for_docs[current_doc_id] = list_of_normalised_tf
+        # temp_dict_tf_for_docs[current_doc_id] = list_of_normalised_tf
 
-        term_counter = 0
-
-    for doc_id, list_pairs in temp_dict_tf_for_docs.items():
-        t_dict = dict(list_pairs)
-        resultant_list = []
-
-        for k, v in dict_of_terms.items():
-            if k in t_dict:
-                num = t_dict[k]
-                to_append = (k, num)
-            else:
-                to_append = (k, 0)
-
-            resultant_list.append(to_append)
-
-        final_tf_vector_dict[doc_id] = resultant_list
-
-    for doc_id, doc_list in final_tf_vector_dict.items():
-        data_to_write = (doc_id, doc_list)
-        print(data_to_write)
-        sys.exit(2)
         # Writing to txt and pickle files
-        normalise_n_txt_file.write(str(data_to_write) + "\n")
-        pickle.dump(data_to_write, normalise_n_pickle_file)
+        normalise_n_txt_file.write(str(list_of_normalised_tf) + "\n")
+        pickle.dump(list_of_normalised_tf, normalise_n_pickle_file)
 
         # Writing to dict file for normalise
-        normalise_n_dict_txt_file.write(str(normalise_n_index_txt) + "\n")
-        pickle.dump(normalise_n_index_pickle, normalise_n_dict_pickle_file)
+        normalise_n_dict_txt_file.write(str(current_doc_id) + " " + str(normalise_n_index_txt) + "\n")
+        pickle.dump((current_doc_id, normalise_n_index_pickle), normalise_n_dict_pickle_file)
 
         normalise_n_index_txt = normalise_n_txt_file.tell()
         normalise_n_index_pickle = normalise_n_pickle_file.tell()
 
         temp_dict.clear()
+        term_counter = 0
 
     dict_of_terms = dict(sorted(dict_of_terms.items()))
 
