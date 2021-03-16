@@ -86,10 +86,6 @@ def run_search(dict_file, postings_file, queries_file, results_file):
     total_num_docs = len(dict_of_length)
 
     all_queries = readable_queries_file.readlines()
-    # for q in all_queries:
-    #     q.rstrip()
-    #     q = q[:-1]
-    #     print (q)
     for list_query in all_queries:
         list_query = list_query[:-1]
         list_of_terms_to_search = list_query.split(" ")
@@ -145,10 +141,8 @@ def run_search(dict_file, postings_file, queries_file, results_file):
                 for pair in list_of_pairs:
                     if pair[0] == item:
                         tf_doc.append(pair)
-                        # print(pair)
             if tf_doc:
                 terms_present.append([k, tf_doc])
-            print([k, tf_doc])
 
         final_list = []
         for ls in terms_present:
@@ -161,37 +155,26 @@ def run_search(dict_file, postings_file, queries_file, results_file):
                 term = pair[0]
                 value = pair[1]
 
-                score += value * query_tf_idf[term]
+                score += value * qugery_tf_idf[term]
 
             final_list.append((score, id))
 
-        final_list.sort(reverse=True)
+        final_list = sorted(final_list, key=lambda x: x[1], reverse=True)
+        final_list = sorted(final_list, key=lambda y: y[0], reverse=False)
+
+        # final_list.sort(key=lambda x: x[1], reverse=False)
+        # final_list.sort(reverse=True)
 
         to_write = []
         try:
-            for i in range(0, 10):
-                to_write.append(str(final_list[i][1]))
+            for i in range(1, 14):
+                to_write.append(str(final_list[-i]))
         except IndexError:
             ...
 
         generated_results_file.write(" ".join(to_write) + "\n")
 
         generated_normalise_n_file.seek(0)
-
-        # try:
-        #     for i in range(0, 12):
-        #         print(final_list[i])
-        # except IndexError:
-        #     ...
-
-
-
-
-
-
-
-
-
 
 
 dictionary_file = postings_file = file_of_queries = output_file_of_results = None
