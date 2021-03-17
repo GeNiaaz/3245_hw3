@@ -12,10 +12,9 @@ def usage():
     print("usage: " + sys.argv[0] + " -d dictionary-file -p postings-file -q file-of-queries -o output-file-of-results")
 
 
-def write_to_mem(dict_f, length_f, norm_f):
+def write_to_mem(dict_f, length_f):
     dict_of_terms = {}
     dict_of_length = {}
-    dict_of_norm = {}
 
     # generate dict of terms
     try:
@@ -33,15 +32,7 @@ def write_to_mem(dict_f, length_f, norm_f):
     except EOFError:
         ...
 
-    # generate dict of norms
-    try:
-        while True:
-            entry = pickle.load(norm_f)
-            dict_of_norm[entry[0]] = entry[1]
-    except EOFError:
-        ...
-
-    return dict_of_terms, dict_of_length, dict_of_norm
+    return dict_of_terms, dict_of_length
 
 
 def check_existence(list_of_terms, dict):
@@ -65,7 +56,6 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
     dict_of_terms = {}
     dict_of_length = {}
-    dict_of_normalised = {}
 
     # Files used for testing search
     readable_queries_file = open(queries_file, 'r')
@@ -73,14 +63,13 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
     # Files generated in indexing stage
     generated_dictionary_file = open(dict_file, 'rb')
-    generated_postings_file = open(postings_file, 'rb')
     generated_length_file = open("length_pickle.pkl", 'rb')
-    generated_normalise_n_dict_file = open("normalise_n_dict.pkl", 'rb')
+    # generated_normalise_n_dict_file = open("normalise_n_dict.pkl", 'rb')
     generated_normalise_n_file = open("normalise_n.pkl", 'rb')
 
     ''' Preprocessing '''
     # Load dictionary and length list into memory
-    dict_of_terms, dict_of_length, dict_of_normalised = write_to_mem(generated_dictionary_file, generated_length_file, generated_normalise_n_dict_file)
+    dict_of_terms, dict_of_length = write_to_mem(generated_dictionary_file, generated_length_file)
 
     # Compute N
     total_num_docs = len(dict_of_length)
@@ -92,10 +81,11 @@ def run_search(dict_file, postings_file, queries_file, results_file):
         list_of_stemmed_terms_to_search = [ps.stem(term) for term in list_of_terms_to_search]
         list_of_stemmed_terms_to_search = check_existence(list_of_stemmed_terms_to_search, dict_of_terms)
 
-        if list_of_stemmed_terms_to_search == 0:
+        # Taking care of edge cases
+        if len(list_of_stemmed_terms_to_search) == 0:
             generated_results_file.write("\n")
             continue
-        if list_of_stemmed_terms_to_search == 1:
+        if len(list_of_stemmed_terms_to_search) == 1:
             single_term_query_status = True
         else:
             single_term_query_status = False
@@ -117,12 +107,10 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
         # Compute query tf-idf
         for term, freq in unique_dict_query_terms.items():
-            list_of_scores = []
-
             tf = 1 + math.log(freq / total_freq, 10)
-
             df = dict_of_terms[term][0]
 
+            # Taking care of single term case, fixing idf to save computation
             if single_term_query_status:
                 idf = 1
             else:
@@ -131,7 +119,6 @@ def run_search(dict_file, postings_file, queries_file, results_file):
             tf_idf = tf * idf
 
             query_tf_idf[term] = tf_idf
-            # query_tf_idf.append((term, tf_idf))
 
         terms_present = []
         for k, v in dict_of_length.items():
@@ -149,31 +136,27 @@ def run_search(dict_file, postings_file, queries_file, results_file):
             id = ls[0]
             list_pairs = ls[1]
 
-            temp = []
             score = 0
             for pair in list_pairs:
                 term = pair[0]
                 value = pair[1]
 
-                score += value * qugery_tf_idf[term]
+                score += value * query_tf_idf[term]
 
             final_list.append((score, id))
 
-        final_list = sorted(final_list, key=lambda x: x[1], reverse=True)
-        final_list = sorted(final_list, key=lambda y: y[0], reverse=False)
-
-        # final_list.sort(key=lambda x: x[1], reverse=False)
-        # final_list.sort(reverse=True)
+        final_list = sorted(final_list, key=lambda x: x[1], reverse=False)
+        final_list = sorted(final_list, key=lambda y: y[0], reverse=True)
 
         to_write = []
+
         try:
-            for i in range(1, 14):
-                to_write.append(str(final_list[-i]))
+            for i in range(0, 10):
+                to_write.append(str(final_list[i][1]))
         except IndexError:
             ...
 
         generated_results_file.write(" ".join(to_write) + "\n")
-
         generated_normalise_n_file.seek(0)
 
 
