@@ -33,3 +33,12 @@ Student email : e0407142@u.nus.edu
       search.
   
 
+>>>> References
+https://stackoverflow.com/questions/7370801/how-to-measure-elapsed-time-in-python
+https://www.geeksforgeeks.org/understanding-tf-idf-term-frequency-inverse-document-frequency/
+https://pythonguides.com/python-sort-list-of-tuples/
+https://stackoverflow.com/questions/3121979/how-to-sort-a-list-tuple-of-lists-tuples-by-the-element-at-a-given-index
+https://www.askpython.com/python/dictionary/sort-a-dictionary-in-python
+https://www.nltk.org/
+https://www.guru99.com/nltk-tutorial.html
+https://pypi.org/project/nltk/

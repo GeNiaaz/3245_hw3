@@ -38,7 +38,7 @@ def build_index(in_dir, out_dict, out_postings):
     '''
 
     # Variables to change
-    case_fold_status = False
+    case_fold_status = True
     stem_status = True
 
     # Init txt files
@@ -63,6 +63,7 @@ def build_index(in_dir, out_dict, out_postings):
 
     dict_of_terms = {}
     temp_dict = {}
+    punctuation = [",", "\"", "/", "(", ")", "/", "?", "!", "@", "#", "^", "*", "|", "+", "-", "_", "="]
 
     for current_doc_id in list_of_document_id:
         doc_path = in_dir + str(current_doc_id)
@@ -71,16 +72,20 @@ def build_index(in_dir, out_dict, out_postings):
 
         print(current_doc_id)
 
+        # Tokenizing and processing of terms in doc
         sentences = nltk.sent_tokenize(doc)
-
         for sentence in sentences:
             terms = nltk.word_tokenize(sentence)
             for term in terms:
-                term_counter += 1
+                if term in punctuation:
+                    continue
+                for p in punctuation:
+                    term.replace(p, "")
                 if case_fold_status:
                     term = term.lower()
                 if stem_status:
                     term = ps.stem(term)
+                term_counter += 1
 
                 # Updating main dictionary of terms
                 if term in dict_of_terms:
@@ -114,7 +119,7 @@ def build_index(in_dir, out_dict, out_postings):
         # Writing pickle length file
         pickle.dump(doc_and_counter, length_pickle_file)
 
-        # Writing Length[N] txt file
+        # Writing Length[N] file
         list_of_tf = []
         list_of_normalised_tf = []
         sum_for_normalizing = 0

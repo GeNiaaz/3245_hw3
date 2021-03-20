@@ -1,4 +1,5 @@
 import pickle
+import string
 
 # dict = {}
 #
@@ -26,12 +27,15 @@ import pickle
 # except EOFError:
 #     print("all done\n")
 
-a = [("hell", 4), ("ger", 31), ("apple", 43), ("bear", 10)]
-a = dict(sorted(a))
+# a = [("hell", 4), ("ger", 31), ("apple", 43), ("bear", 10)]
+# a = dict(sorted(a))
+#
+# var = "apple"
+# if var in a:
+#     print(var)
+# else:
+#     print("not in there")
 
-var = "apple"
-if var in a:
-    print(var)
-else:
-    print("not in there")
-
+s = "hello, where."
+s = s.translate(string.punctuation)
+print(s)

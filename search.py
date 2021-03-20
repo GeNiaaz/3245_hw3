@@ -6,7 +6,9 @@ import sys
 import math
 import pickle
 import getopt
+import time
 
+start = time.time()
 
 def usage():
     print("usage: " + sys.argv[0] + " -d dictionary-file -p postings-file -q file-of-queries -o output-file-of-results")
@@ -35,6 +37,7 @@ def write_to_mem(dict_f, length_f):
     return dict_of_terms, dict_of_length
 
 
+# Returns terms that are available in combined corpus
 def check_existence(list_of_terms, dict):
     to_return = []
     for term in list_of_terms:
@@ -71,14 +74,15 @@ def run_search(dict_file, postings_file, queries_file, results_file):
     # Load dictionary and length list into memory
     dict_of_terms, dict_of_length = write_to_mem(generated_dictionary_file, generated_length_file)
 
-    # Compute N
     total_num_docs = len(dict_of_length)
 
+    # Reading in all queries from queries.txt
     all_queries = readable_queries_file.readlines()
     for list_query in all_queries:
         list_query = list_query[:-1]
-        list_of_terms_to_search = list_query.split(" ")
-        list_of_stemmed_terms_to_search = [ps.stem(term) for term in list_of_terms_to_search]
+        list_of_unlowered_terms_to_search = list_query.split(" ")
+        list_of_lowerered_terms_to_search = [term.lower() for term in list_of_unlowered_terms_to_search]
+        list_of_stemmed_terms_to_search = [ps.stem(term) for term in list_of_lowerered_terms_to_search]
         list_of_stemmed_terms_to_search = check_existence(list_of_stemmed_terms_to_search, dict_of_terms)
 
         # Taking care of edge cases
@@ -110,7 +114,7 @@ def run_search(dict_file, postings_file, queries_file, results_file):
             tf = 1 + math.log(freq / total_freq, 10)
             df = dict_of_terms[term][0]
 
-            # Taking care of single term case, fixing idf to save computation
+            # Taking care of single term case, fixing idf to 1 here to save computation
             if single_term_query_status:
                 idf = 1
             else:
@@ -120,6 +124,8 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
             query_tf_idf[term] = tf_idf
 
+        # Iterating through all terms / freq in each doc
+        # to list values in each doc for calculation
         terms_present = []
         for k, v in dict_of_length.items():
             tf_doc = []
@@ -131,6 +137,8 @@ def run_search(dict_file, postings_file, queries_file, results_file):
             if tf_doc:
                 terms_present.append([k, tf_doc])
 
+        # Performing final calculation to get score
+        # compiling into final_list
         final_list = []
         for ls in terms_present:
             id = ls[0]
@@ -145,6 +153,7 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
             final_list.append((score, id))
 
+        # Sorting entire list, (long) rationale given in README
         final_list = sorted(final_list, key=lambda x: x[1], reverse=False)
         final_list = sorted(final_list, key=lambda y: y[0], reverse=True)
 
@@ -185,3 +194,7 @@ if dictionary_file == None or postings_file == None or file_of_queries == None o
     sys.exit(2)
 
 run_search(dictionary_file, postings_file, file_of_queries, file_of_output)
+
+end = time.time()
+
+print("Search took ", str(end - start), " seconds")
