@@ -13,12 +13,6 @@ def usage():
     print("usage: " + sys.argv[0] + " -i directory-of-documents -d dictionary-file -p postings-file")
 
 
-try:
-    os.mkdir("txt_files")
-except FileExistsError:
-    ...
-
-
 def build_index(in_dir, out_dict, out_postings):
     """
     build index from documents stored in the input directory,
@@ -41,19 +35,10 @@ def build_index(in_dir, out_dict, out_postings):
     case_fold_status = True
     stem_status = True
 
-    # Init txt files
-    final_dict_txt_file = open("txt_files/dictionary.txt", 'a')
-    final_postings_txt_file = open("txt_files/postings.txt", 'a')
-    length_txt_file = open("txt_files/length.txt", 'a')
-    normalise_n_txt_file = open("txt_files/normalise_n.txt", 'a')
-    normalise_n_dict_txt_file = open("txt_files/normalise_n_dict_file.txt", 'a')
-
     # Init pickle files
     final_dict_pickle_file = open(out_dict, 'ab')
-    final_postings_pickle_file = open(out_postings, 'ab')
     length_pickle_file = open("length_pickle.pkl", 'ab')
-    normalise_n_pickle_file = open("normalise_n.pkl", 'ab')
-    normalise_n_dict_pickle_file = open("normalise_n_dict.pkl", 'ab')
+    normalise_n_pickle_file = open(out_postings, 'ab')
 
     term_counter = 0
     normalise_n_index_txt = 0
@@ -114,7 +99,6 @@ def build_index(in_dir, out_dict, out_postings):
 
         # Writing length txt file
         doc_and_counter = (current_doc_id, term_counter)
-        length_txt_file.write(str(doc_and_counter) + "\n")
 
         # Writing pickle length file
         pickle.dump(doc_and_counter, length_pickle_file)
@@ -141,16 +125,8 @@ def build_index(in_dir, out_dict, out_postings):
 
         # temp_dict_tf_for_docs[current_doc_id] = list_of_normalised_tf
 
-        # Writing to txt and pickle files
-        normalise_n_txt_file.write(str(list_of_normalised_tf) + "\n")
+        # Writing to pickle files
         pickle.dump(list_of_normalised_tf, normalise_n_pickle_file)
-
-        # Writing to dict file for normalise
-        normalise_n_dict_txt_file.write(str(current_doc_id) + " " + str(normalise_n_index_txt) + "\n")
-        pickle.dump((current_doc_id, normalise_n_index_pickle), normalise_n_dict_pickle_file)
-
-        normalise_n_index_txt = normalise_n_txt_file.tell()
-        normalise_n_index_pickle = normalise_n_pickle_file.tell()
 
         temp_dict.clear()
         term_counter = 0
@@ -165,24 +141,8 @@ def build_index(in_dir, out_dict, out_postings):
         list_of_postings_str = str(list(value.items()))
         doc_freq = len(list_of_postings)
 
-        # Writing to txt file for postings
-        final_postings_txt_file.write(list_of_postings_str + "\n")
-        ind_txt = final_postings_txt_file.tell()
-
-        # Writing to txt file for dictionary
-        final_dict_txt_file.write(" " + key +
-                                  " doc freq: " + str(doc_freq) +
-                                  ", pointer: " + str(final_dict_index_txt) + "\n")
-
-        # Writing to pkl file for postings
-        pickle.dump(list_of_postings, final_postings_pickle_file)
-        ind_pickle = final_postings_pickle_file.tell()
-
         # Writing to pkl for dictionary
         pickle.dump([key, doc_freq, final_dict_index_pickle], final_dict_pickle_file)
-
-        final_dict_index_txt = ind_txt
-        final_dict_index_pickle = ind_pickle
 
 
 input_directory = output_file_dictionary = output_file_postings = None

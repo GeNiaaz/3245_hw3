@@ -17,7 +17,7 @@ def usage():
 def write_to_mem(dict_f, length_f, pairs_f):
     dict_of_terms = {}
     dict_of_length = {}
-    list_of_dict_of_pairs = []
+    dict_of_dict_of_pairs = {}
 
     # generate dict of terms
     try:
@@ -37,15 +37,17 @@ def write_to_mem(dict_f, length_f, pairs_f):
 
     #  generate dict of pairs
     try:
-        while True:
+        for k, v in dict_of_length.items():
             t_dict = {}
+            t = time.time()
             pairs_in_doc = pickle.load(pairs_f)
             for pair in pairs_in_doc:
                 t_dict[pair[0]] = pair[1]
-            list_of_dict_of_pairs.append(t_dict)
+            dict_of_dict_of_pairs[k] = t_dict
     except EOFError:
         print("end??")
-    return dict_of_terms, dict_of_length, list_of_dict_of_pairs
+
+    return dict_of_terms, dict_of_length, dict_of_dict_of_pairs
 
 
 # Returns terms that are available in combined corpus
@@ -78,14 +80,13 @@ def run_search(dict_file, postings_file, queries_file, results_file):
     # Files generated in indexing stage
     generated_dictionary_file = open(dict_file, 'rb')
     generated_length_file = open("length_pickle.pkl", 'rb')
-    # generated_normalise_n_dict_file = open("normalise_n_dict.pkl", 'rb')
-    generated_normalise_n_file = open("normalise_n.pkl", 'rb')
+    generated_normalise_n_file = open(postings_file, 'rb')
 
     ''' Preprocessing '''
     # Load dictionary and length list into memory
-    dict_of_terms, dict_of_length, list_of_dict_of_pairs = write_to_mem(generated_dictionary_file, generated_length_file, generated_normalise_n_file)
-
+    dict_of_terms, dict_of_length, dict_of_dict_of_pairs = write_to_mem(generated_dictionary_file, generated_length_file, generated_normalise_n_file)
     total_num_docs = len(dict_of_length)
+    ''' End of preprocessing '''
 
     # Reading in all queries from queries.txt
     all_queries = readable_queries_file.readlines()
@@ -135,23 +136,10 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
             query_tf_idf[term] = tf_idf
 
-        # Iterating through all terms / freq in each doc
-        # to list values in each doc for calculation
-        # terms_present = []
-        # for k, v in dict_of_length.items():
-        #     tf_doc = []
-        #     list_of_pairs = pickle.load(generated_normalise_n_file)
-        #     for item in unique_list_query_terms:
-        #         for pair in list_of_pairs:
-        #             if pair[0] == item:
-        #                 tf_doc.append(pair)
-        #     if tf_doc:
-        #         terms_present.append([k, tf_doc])
-
         terms_present = []
         counter = 0
         for k, v in dict_of_length.items():
-            dict = list_of_dict_of_pairs[counter]
+            dict = dict_of_dict_of_pairs[k]
             counter += 1
             tf_doc = []
             for item in unique_list_query_terms:
@@ -176,7 +164,7 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
             final_list.append((score, id))
 
-        # Sorting entire list, (long) rationale given in README
+        # Sorting entire list, rationale given in README
         final_list = sorted(final_list, key=lambda x: x[1], reverse=False)
         final_list = sorted(final_list, key=lambda y: y[0], reverse=True)
 
@@ -217,7 +205,3 @@ if dictionary_file == None or postings_file == None or file_of_queries == None o
     sys.exit(2)
 
 run_search(dictionary_file, postings_file, file_of_queries, file_of_output)
-
-end = time.time()
-
-print("Search took ", str(end - start), " seconds")
