@@ -1,9 +1,11 @@
-world news
-reserve stockpile
-global warming and pollution
-stock market crash
-virus epidemic
-sdivjisdjicvjisdjvjijisdijvjisjivrwovsd$89#
-world
-keyboard exploSioN
-there are many and is the
+Q1:
+    - A naive way of doing it would be to save different permutations of phrases up to a point, and treat those as terms as
+    well. This would work, but would take up significantly more space.
+    - Another way is to save the terms along with their relative position when indexing. When phrasal queries are done, each
+    term's relative position value can be checked with the relative position value of the next term in the query, if not present,
+    processing of the doc can stop right there, and move on to process the next doc.
+    - This would save significant time, as the search would not have to go to completion for every term in the query, but only
+    when the doc is promising.
+
+Q2:
+    -
