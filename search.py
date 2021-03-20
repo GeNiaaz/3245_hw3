@@ -14,9 +14,10 @@ def usage():
     print("usage: " + sys.argv[0] + " -d dictionary-file -p postings-file -q file-of-queries -o output-file-of-results")
 
 
-def write_to_mem(dict_f, length_f):
+def write_to_mem(dict_f, length_f, pairs_f):
     dict_of_terms = {}
     dict_of_length = {}
+    list_of_dict_of_pairs = []
 
     # generate dict of terms
     try:
@@ -34,7 +35,17 @@ def write_to_mem(dict_f, length_f):
     except EOFError:
         ...
 
-    return dict_of_terms, dict_of_length
+    #  generate dict of pairs
+    try:
+        while True:
+            t_dict = {}
+            pairs_in_doc = pickle.load(pairs_f)
+            for pair in pairs_in_doc:
+                t_dict[pair[0]] = pair[1]
+            list_of_dict_of_pairs.append(t_dict)
+    except EOFError:
+        print("end??")
+    return dict_of_terms, dict_of_length, list_of_dict_of_pairs
 
 
 # Returns terms that are available in combined corpus
@@ -72,7 +83,7 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
     ''' Preprocessing '''
     # Load dictionary and length list into memory
-    dict_of_terms, dict_of_length = write_to_mem(generated_dictionary_file, generated_length_file)
+    dict_of_terms, dict_of_length, list_of_dict_of_pairs = write_to_mem(generated_dictionary_file, generated_length_file, generated_normalise_n_file)
 
     total_num_docs = len(dict_of_length)
 
@@ -126,14 +137,26 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
         # Iterating through all terms / freq in each doc
         # to list values in each doc for calculation
+        # terms_present = []
+        # for k, v in dict_of_length.items():
+        #     tf_doc = []
+        #     list_of_pairs = pickle.load(generated_normalise_n_file)
+        #     for item in unique_list_query_terms:
+        #         for pair in list_of_pairs:
+        #             if pair[0] == item:
+        #                 tf_doc.append(pair)
+        #     if tf_doc:
+        #         terms_present.append([k, tf_doc])
+
         terms_present = []
+        counter = 0
         for k, v in dict_of_length.items():
+            dict = list_of_dict_of_pairs[counter]
+            counter += 1
             tf_doc = []
-            list_of_pairs = pickle.load(generated_normalise_n_file)
             for item in unique_list_query_terms:
-                for pair in list_of_pairs:
-                    if pair[0] == item:
-                        tf_doc.append(pair)
+                if item in dict:
+                    tf_doc.append((item, dict[item]))
             if tf_doc:
                 terms_present.append([k, tf_doc])
 
