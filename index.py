@@ -123,8 +123,6 @@ def build_index(in_dir, out_dict, out_postings):
 
             list_of_normalised_tf.append((p[0], norm_result))
 
-        # temp_dict_tf_for_docs[current_doc_id] = list_of_normalised_tf
-
         # Writing to pickle files
         pickle.dump(list_of_normalised_tf, normalise_n_pickle_file)
 
