@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 import re
+import string
+
 import nltk
 from nltk.stem import PorterStemmer
 import sys
@@ -37,7 +39,7 @@ def build_index(in_dir, out_dict, out_postings):
 
     # Init pickle files
     final_dict_pickle_file = open(out_dict, 'ab')
-    length_pickle_file = open("length_pickle.pkl", 'ab')
+    length_pickle_file = open("length.pkl", 'ab')
     normalise_n_pickle_file = open(out_postings, 'ab')
 
     term_counter = 0
@@ -62,7 +64,7 @@ def build_index(in_dir, out_dict, out_postings):
         for sentence in sentences:
             terms = nltk.word_tokenize(sentence)
             for term in terms:
-                if term in punctuation:
+                if term in string.punctuation:
                     continue
                 for p in punctuation:
                     term.replace(p, "")

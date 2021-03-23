@@ -22,9 +22,9 @@ Command to search: python search.py -d dictionary.pkl -p postings.pkl -q queries
 - I have employed the lnc.ltc scheme as described.
 - However, the way I stored data was different from what was described in the website.
     I stored the term and doc freq in the dictionary for easy calculation.
-    In the other normalise_n doc I stored both the term as well as the normalised value.
+    In the other postings file I stored both the term as well as the normalised value.
     
-* Now my rationale for using the term in the normalise_n doc:
+* Now my rationale for using the term in the postings file:
     While it may seem wasteful to save the term in the doc when I could have just as easily saved 
     the normalised value for all terms in order, which would be simpler.
     
@@ -68,10 +68,10 @@ index.py
 Source code containing program to perform processing of boolean queries:
 search.py
 
-Dictionary, Postings and file of length
-dictionary.pkl
-postings.pkl
-length_pickle.pkl
+Dictionary, Postings and file of length:
+- dictionary.pkl
+- postings.pkl
+- length_pickle.pkl
 
 == Statement of individual work ==
 

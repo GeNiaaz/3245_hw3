@@ -79,7 +79,7 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
     # Files generated in indexing stage
     generated_dictionary_file = open(dict_file, 'rb')
-    generated_length_file = open("length_pickle.pkl", 'rb')
+    generated_length_file = open("length.pkl", 'rb')
     generated_normalise_n_file = open(postings_file, 'rb')
 
     ''' Preprocessing '''

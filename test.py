@@ -36,6 +36,10 @@ import string
 # else:
 #     print("not in there")
 
-s = "hello, where."
-s = s.translate(string.punctuation)
-print(s)
+# s = "hello, where."
+# s = s.translate(string.punctuation)
+# print(s)
+
+f = open("postings.pkl", "rb")
+print(pickle.load(f))
+print(pickle.load(f))
