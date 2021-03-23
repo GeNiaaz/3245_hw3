@@ -83,7 +83,7 @@ expressly vow that I have followed the Facebook rule in discussing
 with others in doing the assignment and did not take notes (digital or
 printed) from the discussions.
 
-[ ] I/We, A0206332U-A0200161E, did not follow the class rules regarding homework
+[ ] I/We, A0200161E, did not follow the class rules regarding homework
 assignment, because of the following reason:
 
 <Please fill in>

@@ -1,14 +1,10 @@
 #!/usr/bin/python3
-import re
-import nltk
 from nltk.stem import PorterStemmer
 import sys
 import math
 import pickle
 import getopt
-import time
 
-start = time.time()
 
 def usage():
     print("usage: " + sys.argv[0] + " -d dictionary-file -p postings-file -q file-of-queries -o output-file-of-results")
@@ -35,17 +31,8 @@ def write_to_mem(dict_f, length_f, pairs_f):
     except EOFError:
         ...
 
-    #  generate dict of pairs
-    try:
-        for k, v in dict_of_length.items():
-            t_dict = {}
-            t = time.time()
-            pairs_in_doc = pickle.load(pairs_f)
-            for pair in pairs_in_doc:
-                t_dict[pair[0]] = pair[1]
-            dict_of_dict_of_pairs[k] = t_dict
-    except EOFError:
-        print("end??")
+    # generate postings dict of dicts
+    dict_of_dict_of_pairs = pickle.load(pairs_f)
 
     return dict_of_terms, dict_of_length, dict_of_dict_of_pairs
 
@@ -79,7 +66,7 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
     # Files generated in indexing stage
     generated_dictionary_file = open(dict_file, 'rb')
-    generated_length_file = open("length_pickle.pkl", 'rb')
+    generated_length_file = open("length.pkl", 'rb')
     generated_normalise_n_file = open(postings_file, 'rb')
 
     ''' Preprocessing '''
@@ -91,7 +78,7 @@ def run_search(dict_file, postings_file, queries_file, results_file):
     # Reading in all queries from queries.txt
     all_queries = readable_queries_file.readlines()
     for list_query in all_queries:
-        list_query = list_query[:-1]
+        list_query = list_query.strip()
         list_of_unlowered_terms_to_search = list_query.split(" ")
         list_of_lowerered_terms_to_search = [term.lower() for term in list_of_unlowered_terms_to_search]
         list_of_stemmed_terms_to_search = [ps.stem(term) for term in list_of_lowerered_terms_to_search]

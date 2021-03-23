@@ -5,6 +5,7 @@ import math
 import pickle
 import getopt
 
+
 def usage():
     print("usage: " + sys.argv[0] + " -d dictionary-file -p postings-file -q file-of-queries -o output-file-of-results")
 
@@ -77,7 +78,7 @@ def run_search(dict_file, postings_file, queries_file, results_file):
     # Reading in all queries from queries.txt
     all_queries = readable_queries_file.readlines()
     for list_query in all_queries:
-        list_query = list_query[:-1]
+        list_query = list_query.strip()
         list_of_unlowered_terms_to_search = list_query.split(" ")
         list_of_lowerered_terms_to_search = [term.lower() for term in list_of_unlowered_terms_to_search]
         list_of_stemmed_terms_to_search = [ps.stem(term) for term in list_of_lowerered_terms_to_search]
