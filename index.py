@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import re
 import string
 
 import nltk
@@ -50,6 +49,8 @@ def build_index(in_dir, out_dict, out_postings):
 
     dict_of_terms = {}
     temp_dict = {}
+    postings_dict = {}
+
     punctuation = [",", "\"", "/", "(", ")", "/", "?", "!", "@", "#", "^", "*", "|", "+", "-", "_", "="]
 
     for current_doc_id in list_of_document_id:
@@ -126,10 +127,20 @@ def build_index(in_dir, out_dict, out_postings):
             list_of_normalised_tf.append((p[0], norm_result))
 
         # Writing to pickle files
-        pickle.dump(list_of_normalised_tf, normalise_n_pickle_file)
+        postings_dict[current_doc_id] = list_of_normalised_tf
+        # pickle.dump(list_of_normalised_tf, normalise_n_pickle_file)
 
         temp_dict.clear()
         term_counter = 0
+
+    final_posting_dict = {}
+    for k, v in postings_dict.items():
+        temp_dict = {}
+        for pair in v:
+            temp_dict[pair[0]] = pair[1]
+        final_posting_dict[k] = temp_dict
+
+    pickle.dump(final_posting_dict, normalise_n_pickle_file)
 
     dict_of_terms = dict(sorted(dict_of_terms.items()))
 

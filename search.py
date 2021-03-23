@@ -1,6 +1,4 @@
 #!/usr/bin/python3
-import re
-import nltk
 from nltk.stem import PorterStemmer
 import sys
 import math
@@ -8,7 +6,6 @@ import pickle
 import getopt
 import time
 
-start = time.time()
 
 def usage():
     print("usage: " + sys.argv[0] + " -d dictionary-file -p postings-file -q file-of-queries -o output-file-of-results")
@@ -35,17 +32,8 @@ def write_to_mem(dict_f, length_f, pairs_f):
     except EOFError:
         ...
 
-    #  generate dict of pairs
-    try:
-        for k, v in dict_of_length.items():
-            t_dict = {}
-            t = time.time()
-            pairs_in_doc = pickle.load(pairs_f)
-            for pair in pairs_in_doc:
-                t_dict[pair[0]] = pair[1]
-            dict_of_dict_of_pairs[k] = t_dict
-    except EOFError:
-        print("end??")
+    # generate postings dict of dicts
+    dict_of_dict_of_pairs = pickle.load(pairs_f)
 
     return dict_of_terms, dict_of_length, dict_of_dict_of_pairs
 

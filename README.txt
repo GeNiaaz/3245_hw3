@@ -43,12 +43,12 @@ Command to search: python search.py -d dictionary.pkl -p postings.pkl -q queries
     tf, I would have to search through the list of dictionaries for calulation.
     
 - Initially, I used a list of lists to store these terms and the normalized tf values for the terms in each doc.
-    + However, this was extremely slow, bringing up my preprocessing + search time to 1.3s
+    + However, this was extremely (relatively) slow, bringing up my preprocessing + search time to 1.3s
     + After consulting on the forum, I found out another person had gotten 0.2~ seconds, and I had to find the bottleneck
     + With much time experimentation, I narrowed it down to the accessing of lists of lists, which I chanegd to a list
         of dictionaries. I again optimised it to a dictionary of dictionaries.
-    + I was now at 0.3~ seconds for preprocessing + searching.
-    + This allowed my query processing (after preprocessing) to be much faster, at < 0.1s
+    + I was now at 0.2~ seconds for preprocessing + searching.
+    + This allowed my query processing (after preprocessing in memory) to be much faster, at < 0.1s
 - I again ran through by timing every few chunks of code to find the bottleneck, until I found my next bottleneck: unpickling
     the text file that holds the data.
     + This will not present an issue during searching, as it can be done during PREPROCESSING and hence not affect a
