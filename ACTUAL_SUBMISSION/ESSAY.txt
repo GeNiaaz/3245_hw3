@@ -1,0 +1,28 @@
+Q1:
+    - A naive way of doing it would be to save different permutations of phrases up to a point, and treat those as terms as
+    well. This would work, but would take up significantly more space.
+    - Another way is to save the terms along with their relative position when indexing. When phrasal queries are done, each
+    term's relative position value can be checked with the relative position value of the next term in the query, if not present,
+    processing of the doc can stop right there, and move on to process the next doc.
+    - This would save significant time, as the search would not have to go to completion for every term in the query, but only
+    when the doc is promising.
+
+Q2:
+    - For the relatively short document length we are given in the Reuters collection, not much of an issue is posed by normalizing,
+    however in a dataset with relatively longer document lengths with either verbose repetitive content or documents where terms
+    may only account for a small section, this way of normalizing may not be so representative, and pivoted document length
+    normalization is needed.
+    - I would instead normalize by 2 factors: if the terms clustered around the target terms are consistent across different mentiones
+    of the target term in the document, I can say with high probability that this is a verbose document, and can normalize while
+    giving less weight (importance) to this document. If instead, the target terms' usage is only clustered in one part of the document
+    and absent in others, I would also give less importance to this document. In both cases I would have a metric that measured the amount
+    of irrelevance this document posed, and adjust during normalization accordingly.
+    - I think ltc.lnc would be sufficient for Reuters-21578. While document sizes are not long, but they do vary enough that the
+    content mentioned in them may be mentioned only once in a part of the document, and irrelevant for the rest of the document, and
+    hence only taking into account tf and not normalizing it with document length will be insufficient.
+
+Q3:
+    - They would provide some insight into the relevance and context of the data in the documents. Even though the data is missing in some
+    documents, those can be treated as having data averaged out from the rest of the documents. So if for example a mean characteristic A is
+    5 across all documents in the collection that have metadata, then this characteristic A will be 5 across all documents that do not have metadata.
+    - This is of course not ideal, but is good because it allows for the metadata of other documents to matter as well.
